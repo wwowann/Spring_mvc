@@ -20,7 +20,7 @@ public class PostService {
     }
 
     public Post getById(long id) {
-        if (id == 0) throw new NotFoundException();
+        if (id == 0) throw new NotFoundException("данный id отсутствует");
         return repository.getById(id);
     }
 

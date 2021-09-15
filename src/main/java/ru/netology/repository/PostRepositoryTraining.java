@@ -4,6 +4,8 @@ import org.springframework.stereotype.Repository;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,16 +15,26 @@ public class PostRepositoryTraining implements PostRepository {
     static long counter = 0;
 
     public List<Post> all() {
-        return List.of(new Post(11, "Привет!!"), new Post(12, "Пока!"));
-        // new ArrayList<>(repositoryMap.values());
+        List<Post> posts = new ArrayList<>();
+        for (ConcurrentHashMap.Entry<Long, Post> entry : repositoryMap.entrySet()) {
+            if (!entry.getValue().getFlag().equals("remove")) {
+                posts.add(entry.getValue());
+            }
+        }
+        return posts;
+//           return List.of(new Post(11, "Привет!!"), new Post(12, "Пока!"));
+
     }
 
     public Post getById(long id) {
+        if (repositoryMap.get(id).getFlag().equals("remove")) {
+            throw new NotFoundException();
+        }
         return repositoryMap.get(id);
     }
 
-    public Post save(Post post){
-        if (post.getId() == 0) {
+    public Post save(Post post) {
+        if (post.getId() == 0 && !post.getFlag().equals("remove")) {
             counter++;
             repositoryMap.put(counter, new Post(post.getId(), post.getContent()));
         }
@@ -39,7 +51,8 @@ public class PostRepositoryTraining implements PostRepository {
 
     public void removeById(long id) {
         if (repositoryMap.containsKey(id)) {
-            repositoryMap.remove(id, repositoryMap.get(id));
+            repositoryMap.get(id).setFlag("remove");
+//            repositoryMap.remove(id, repositoryMap.get(id));
         }
     }
 }
