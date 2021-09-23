@@ -34,7 +34,8 @@ public class PostRepositoryTraining implements PostRepository {
     }
 
     public Post save(Post post) {
-        if (post.getId() == 0 && !post.getFlag().equals("remove")) {
+        if (post.getId() == 0 /*//&& !post.getFlag().equals("remove")*/) {//да, здесь ошибка,
+            // т.к. если поста нет, то флага не может быть т.е. = null
             counter++;
             repositoryMap.put(counter, new Post(post.getId(), post.getContent()));
         }
